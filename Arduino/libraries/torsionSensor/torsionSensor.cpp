@@ -22,13 +22,13 @@ torsionSensor::torsionSensor(int pin0, int pin1)
    digitalWrite(mPinSensor0, 1);
 
    // long may be a 64-bit type, but 1 is still an int. You need to make 1 a long int using the UL suffix.
-   unsigned long int REG_PMC_PCER0 = (1UL<<27); // Activate clock for TC0
+   REG_PMC_PCER0 = (1UL<<27); // Activate clock for TC0
    // Reset counter on TC_CV == RC
-   int REG_TC0_CMR0 = (1<<0)|(1<<2)|(1<<8)|(1<<10)|(1 << 14);    // reset counter on index
-   int REG_TC0_BMR = (1<<8)|(1<<9)|(1<<12);     // activate with no filters
-   int REG_TC0_CCR0 = 5;    //enable clock and reset counter
+   REG_TC0_CMR0 = (1<<0)|(1<<2)|(1<<8)|(1<<10)|(1 << 14);    // reset counter on index
+   REG_TC0_BMR = (1<<8)|(1<<9)|(1<<12);     // activate with no filters
+   REG_TC0_CCR0 = 5;    //enable clock and reset counter
 
-   int REG_TC0_RC0 = 360;
+   REG_TC0_RC0 = 360;
    
    Serial.begin(9600);
 }

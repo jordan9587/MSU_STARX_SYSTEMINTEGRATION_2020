@@ -1,6 +1,6 @@
 #include <pressureSensor.h>
 #include <debugMenu.h>
-//#include <torsionSensor.h>
+#include <torsionSensor.h>
 #include <PID_v1.h>
 #include <Fsm.h>
 
