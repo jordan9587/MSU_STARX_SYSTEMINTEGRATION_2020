@@ -2,6 +2,10 @@
  * \file torsionSensor.h
  *
  * \author Sparty
+ * 
+ * Library to interface for 600EN-128-CBL 600 Series Optical, 128 Pulse Per Rev, 2-square wave Rotary Encoder.
+ * Designed for Arduino Due with Atmel SAM3X8E ARM Cortex-M3 CPU.
+ * 
  */
 
 

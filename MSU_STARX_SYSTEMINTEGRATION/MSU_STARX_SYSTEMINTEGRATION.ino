@@ -3,6 +3,7 @@
 #include <torsionSensor.h>
 #include <PID_v1.h>
 #include <Fsm.h>
+#include <pwmConfiguration.h>
 
 //PID
 double setpoint;
@@ -18,7 +19,7 @@ PID myPID_reverse(&input, &output, &setpoint, Kp, Ki, Kd, REVERSE);
 //Actuator variables come below:
 int pressurePin = A3;
 
-// Potentiometers
+// Potentiometers/Torsion Sensors
 int potentiometersHipPin = A1;
 int potentiometersKneePin = A2;
 
@@ -37,8 +38,8 @@ int knee_60degrees = knee_0degrees-220;
 // Examples to call onto custom libraries.
 pressureSensor pressureSensor(A0, A1);
 debugMenu debugMenu;
-// Currently Broken due to register manipulation
-// torsionSensor torsionSensor(13,2);
+pwmConfiguration pwmConfiguration();
+torsionSensor torsionSensor(13,2);
 
 // Debug Menu
 int debugStatus = 0;

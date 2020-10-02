@@ -2,6 +2,10 @@
  * \file torsionSensor.cpp
  *
  * \author Sparty
+ * 
+ * Library to interface for 600EN-128-CBL 600 Series Optical, 128 Pulse Per Rev, 2-square wave Rotary Encoder.
+ * Designed for Arduino Due with Atmel SAM3X8E ARM Cortex-M3 CPU.
+ * 
  */
 
 
@@ -19,7 +23,8 @@ torsionSensor::torsionSensor(int pin0, int pin1)
     mPinSensor1 = pin1;
 
     /*
-     Set pullups on torison inputs.
+     Set pullups on torison inputs. 
+     QDEC configuration on DUE Datasheet Chapter 36.
     */
     pinMode(mPinSensor1, OUTPUT);
     pinMode(mPinSensor0, OUTPUT);
@@ -31,7 +36,8 @@ torsionSensor::torsionSensor(int pin0, int pin1)
     REG_TC0_CMR0 = (1<<0)|(1<<2)|(1<<8)|(1<<10)|(1 << 14);    // reset counter on index
     REG_TC0_BMR = (1<<8)|(1<<9)|(1<<12);     // activate with no filters
     REG_TC0_CCR0 = 5;    //enable clock and reset counter
-
+    
+    // Reset Counter on TC_CV == RC
     REG_TC0_RC0 = 360;
     
     Serial.begin(9600);
