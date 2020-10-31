@@ -8,7 +8,7 @@
 #ifndef debugMenu_h
 #define debugMenu_h
 
-#include "debugMenu.h"
+#include "Arduino.h"
 
 class debugMenu
 {

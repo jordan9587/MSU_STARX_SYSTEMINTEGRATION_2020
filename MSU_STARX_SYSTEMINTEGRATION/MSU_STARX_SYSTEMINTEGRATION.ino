@@ -1,11 +1,11 @@
+#include <pwmConfiguration.h>
 #include <pressureSensor.h>
 #include <debugMenu.h>
 #include <torsionSensor.h>
 #include <PID_v1.h>
 #include <Fsm.h>
-#include <pwmConfiguration.h>
 
-//PID
+////PID
 double setpoint;
 double input;
 double output;
@@ -16,16 +16,17 @@ double Kd=0;
 PID myPID_direct(&input, &output, &setpoint, Kp, Ki, Kd, DIRECT);
 PID myPID_reverse(&input, &output, &setpoint, Kp, Ki, Kd, REVERSE);
 
-//Actuator variables come below:
+////Actuator variables come below:
 int pressurePin = A3;
 
-// Potentiometers/Torsion Sensors
+//// Potentiometers/Torsion Sensors
 int potentiometersHipPin = A1;
 int potentiometersKneePin = A2;
 
-// Pressure Sensor
+//// Pressure Sensor
 
-// Three Tier Tyler Gait Setpoints
+
+//// Three Tier Tyler Gait Setpoints
 int hip_0degrees = 580; 
 int hip_10degrees = hip_0degrees+35;
 int hip_15degrees = hip_0degrees-42;
@@ -35,16 +36,17 @@ int knee_30degrees = knee_0degrees-130;
 int knee_60degrees = knee_0degrees-220;
 
 
-// Examples to call onto custom libraries.
-pressureSensor pressureSensor(A0, A1);
+//// Examples to call onto custom libraries.
+pressureSensor pressureSensor(A0, 'A');
 debugMenu debugMenu;
-pwmConfiguration pwmConfiguration();
+pwmConfiguration pwmConfiguration;
 torsionSensor torsionSensor(13,2);
 
-// Debug Menu
+//// Debug Menu
 int debugStatus = 0;
 
-// Example for State Machine example:
+
+//// Example for State Machine example:
 #define LED1_PIN 10
 #define LED2_PIN 11
 
@@ -91,8 +93,6 @@ Fsm fsm_led2(&state_led2_off);
 void setup() 
 {
   // put your setup code here, to run once:
-
-
   // Set pins for actuators, PWM for knee and hip for potentiometer, ect.
   pinMode(potentiometersHipPin, INPUT); 
   pinMode(potentiometersKneePin, INPUT); 
@@ -122,6 +122,68 @@ void setup()
   fsm_led1.add_timed_transition(&state_led1_on, &state_led1_off, 3000, NULL);
   fsm_led2.add_timed_transition(&state_led2_off, &state_led2_on, 1000, NULL);
   fsm_led2.add_timed_transition(&state_led2_on, &state_led2_off, 2000, NULL);
+
+  //// pwmConfiguration Examples:
+  /*
+  * PWM initalisation for SAM3X Pins
+  * Mapped Pin: D32
+  * Select Instance: PWM
+  * Signal: PWMH3 (Channel 3)
+  * I/O Line: PD10 (P10)
+  * Peripheral: B
+  * Frequency: 2100 Mhz (84 Mhz / 40 kHz = 2100)
+  * Duty Cycle: 50% duty cycle (2100 / 2 = 1050)
+  */
+  pwmConfiguration.setupPWMPinD(20, 3, 3, 2100, 1050);
+  /*
+  * PWM initalisation for SAM3X Pins
+  * Mapped Pin: D38
+  * Select Instance: PWM
+  * Signal: PWMH2 (Channel 2)
+  * I/O Line: PC6 (P6)
+  * Peripheral: C
+  * Frequency: 2100 Mhz (84 Mhz / 40 kHz = 2100)
+  * Duty Cycle: 50% duty cycle (2100 / 2 = 1050)
+  */
+  pwmConfiguration.setupPWMPinC(6, 2, 2, 2100, 1050);
+  /*
+  * PWM initalisation for SAM3X Pins
+  * Mapped Pin: DAC1
+  * Select Instance: PWM
+  * Signal: PWMH1 (Channel 1)
+  * I/O Line: PB16 (P16)
+  * Peripheral: B
+  * Frequency: 2100 Mhz (84 Mhz / 40 kHz = 2100)
+  * Duty Cycle: 50% duty cycle (2100 / 2 = 1050)
+  */
+  pwmConfiguration.setupPWMPinB(16, 1, 1, 2100, 1050);
+  /*
+  * PWM initalisation for SAM3X Pins
+  * Mapped Pin: A7
+  * Select Instance: PWM
+  * Signal: PWMH0 (Channel 0)
+  * I/O Line: PA2 (P2)
+  * Peripheral: A
+  * Frequency: 2100 Mhz (84 Mhz / 40 kHz = 2100)
+  * Duty Cycle: 50% duty cycle (2100 / 2 = 1050)
+  */
+  pwmConfiguration.setupPWMPinA(2, 0, 0, 2100, 1050);
+  
+  /*
+  * Fetches pwmChannel 0, which is pin A7 and changes duty cycle to 2100/4 = 25%.
+  */
+  pwmConfiguration.changePWMDutyCycle(0, (2100/4));
+  /*
+  * Fetches pwmChannel 1, which is pin DAC1 and changes frequency to 2100/4 = 4200.
+  */
+  pwmConfiguration.changePWMFrequency(1, (2100*2));
+  /*
+  * Fetches pwmChannel 2, which is pin D38 and changes duty cycle to 2100/3 = 33.33...%.
+  * Fetches pwmChannel 1, which is pin DAC1 and changes frequency to 2100/2 = 1050.
+  */
+  pwmConfiguration.changePWMDutyCycle(2, (2100/3));
+  pwmConfiguration.changePWMFrequency(2, (2100/2));
+
 }
 
 void loop() 
