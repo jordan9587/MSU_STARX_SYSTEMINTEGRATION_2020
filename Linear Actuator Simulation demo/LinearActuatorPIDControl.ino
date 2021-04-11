@@ -9,7 +9,7 @@
 #define EnablePin 9 //Enable pin
 #define encoderPinA 2
 #define encoderPinB 3
-#define LED 13  //LED pin
+#define LED 13 
 #define Kp 1200   //PID defualts for Linear Actuator
 #define Ki 250000
 #define Kd 10000  
@@ -20,17 +20,18 @@ DCMotor mtr_ctrl(motorPWMPin, motorDirPin, EnablePin); //pin 6: pwm; pin 5: Dir;
 
 volatile double encoderPos = 0;
 //float ratio = (360)/1024;
-//const float ratio = (360/188.611)/48;
+//const float ratio = (360/188.611)/48; //Ratio from reference code
+//Reference code ratio values:
 // 360 -> 1 rotation
 // 188.611 -> Gear Ratio
-// 48 -> Pulses Per Revolution from encoder
+// 48 -> Pulses Per Revolution from encoder 
 //1024 -> Pulses Per Revolution from encoder (servo specs)
 
 
 
 // PID control
 
-//double Kp = 10; double Ki=0.00001; double Kd=0.4; //Most opitmal performance
+//double Kp = 10; double Ki=0.00001; double Kd=0.4; //Most optimal performance for reference code
 //float Kp = 1200; float Ki=250000; float Kd=10000;
 //double targetDeg = 360;   //Setpoint
 double encoderDeg;
@@ -73,11 +74,12 @@ void loop()
   
   digitalWrite(EnablePin, 255);
   
+  
   if (control>=0){
-    runMotor(HIGH, min(abs(control), 255));
+    runMotor(HIGH, min(abs(control), 255)); //Forward Direction
   }
   else{
-    runMotor(LOW, min(abs(control), 255));
+    runMotor(LOW, min(abs(control), 255));  //Reverse Direction
   }
   past_error = error;
   lastTime = now;
@@ -117,8 +119,10 @@ void runEncoderB()
 
 void runMotor(bool dir, int vel)
 {
+  //Sets motor direction
   mtr_ctrl.motorDir(dir);
   digitalWrite(LED, dir);
+  //Sets velocity
   if (dir == true){
     mtr_ctrl.pwmMotor(255-vel);
   }
