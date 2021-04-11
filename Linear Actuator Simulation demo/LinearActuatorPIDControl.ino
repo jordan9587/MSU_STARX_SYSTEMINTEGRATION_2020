@@ -1,6 +1,9 @@
 ///////////////////////////////////////////////////////////
 // PID control of DC motor with rotary dual phase encoder//
 ///////////////////////////////////////////////////////////
+
+#include DCMotor.h
+
 #define motorDirPin 5 //Dir pin
 #define motorPWMPin 6 //PWM pin
 #define EnablePin 9 //Enable pin
