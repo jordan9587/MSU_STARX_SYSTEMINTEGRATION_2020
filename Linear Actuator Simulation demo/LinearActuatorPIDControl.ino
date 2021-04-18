@@ -3,22 +3,24 @@
 ///////////////////////////////////////////////////////////
 
 #include DCMotor.h
-
+#include <PID_v1.h>
 #define motorDirPin 5 //Dir pin
 #define motorPWMPin 6 //PWM pin
 #define EnablePin 9 //Enable pin
 #define encoderPinA 2
 #define encoderPinB 3
 #define LED 13 
-#define Kp 1200   //PID defualts for Linear Actuator
-#define Ki 250000
-#define Kd 10000  
-#define setpoint 360    //defining setpoint for motor pos
+//#define Kp 1200   //PID defualts for Linear Actuator
+//#define Ki 250000
+//#define Kd 10000  
+//#define setpoint 360    //defining setpoint for motor pos
+
 // motor control initialization
 DCMotor mtr_ctrl(motorPWMPin, motorDirPin, EnablePin); //pin 6: pwm; pin 5: Dir; pin 9: Enable
 
 
 volatile double encoderPos = 0;
+
 //float ratio = (360)/1024;
 //const float ratio = (360/188.611)/48; //Ratio from reference code
 //Reference code ratio values:
@@ -29,11 +31,13 @@ volatile double encoderPos = 0;
 
 
 
-// PID control
+// PID values
 
-//double Kp = 10; double Ki=0.00001; double Kd=0.4; //Most optimal performance for reference code
-//float Kp = 1200; float Ki=250000; float Kd=10000;
-//double targetDeg = 360;   //Setpoint
+double Kp = 1200;
+double Kd = 25;
+double Ki = 0.1;
+double setpoint = 90;
+
 double encoderDeg;
 double motorDeg = 0;
 float past_error;
@@ -42,6 +46,9 @@ float error;
 float D_error = 0;
 float I_error = 0;
 double control = 0;
+int count=0;
+
+PID myPID(&motorDeg, &control, &setpoint, Kp, Ki, Kd, DIRECT);
 
 void setup()
 {
@@ -56,21 +63,18 @@ void setup()
   pinMode(LED, OUTPUT);
   pinMode(motorDirPin, OUTPUT);
   pinMode(EnablePin, OUTPUT);
+  myPID.SetMode(AUTOMATIC);   //set PID in Auto mode
+  myPID.SetSampleTime(1);  // refresh rate of PID controller
+  myPID.SetOutputLimits(-255, 255); // this is the MAX PWM value to move 
 }
 
 void loop()
 {
+  count+=1;
   //EncoderPos mapped from 0 to 360deg (9061 value found from observing encoderPos change vs degree)
   motorDeg = map((encoderPos), 0, 9061, 0, 360);
-  //motorDeg = (encoderPos)*ratio;  //Input
-  unsigned long now = millis();
-  double timeChange = (double)(now - lastTime);
-  
-  error = setpoint - motorDeg;  //error calculation
-  I_error = timeChange * error; //I calculation
-  D_error = (past_error-error)/timeChange;  //D calculations
-  
-  control = Kp*error + Ki*I_error + Kd*D_error; //PID output
+  myPID.Compute();
+  //motorDeg = (encoderPos)*ratio;  //Input from reference code
   
   digitalWrite(EnablePin, 255);
   
@@ -81,8 +85,6 @@ void loop()
   else{
     runMotor(LOW, min(abs(control), 255));  //Reverse Direction
   }
-  past_error = error;
-  lastTime = now;
   
   //Serial.print("encoderPos : ");
   //Serial.print(encoderPos);
